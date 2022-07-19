@@ -11,6 +11,9 @@
 body {
     background-color: #36393F;
     color: white;
+    font-family: "Uni Sans Bold";
+	padding: 10px;
+    font-size: 20px;
 }
 
 #Top {
@@ -18,9 +21,7 @@ body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 10px;
     color: white;
-    font-family: "Uni Sans Bold";
 }
 
 nav {
@@ -28,9 +29,7 @@ nav {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 10px;
     color: white;
-    font-family: "Uni Sans Bold";
 }
 
 nav ul li {
@@ -38,7 +37,6 @@ nav ul li {
     display: inline-block;
     margin: 10px;
     color: white;
-    font-family: "Uni Sans Bold";
 }
 
 nav ul li a {
@@ -60,7 +58,6 @@ input {
     border: none;
     color: white;
     padding: 10px;
-    margin: 10px;
     border-radius: 5px;
 }
 
@@ -70,14 +67,18 @@ button {
     color: white;
     padding: 10px;
     border-radius: 5px;
+	cursor: inherit;
+	transition: background-color 0.17s ease;
+	font: inherit;
+	line-height: 0;
 }
 
-button:hover {
+body:not(.resizing) button:hover {
     background-color: #225F34;
     cursor: pointer;
 }
 
-button:active {
+body:not(.resizing) button:active {
     background-color: #1E532E;
 }
 
@@ -87,7 +88,6 @@ button:active {
 }
 
 #Output {
-    margin: 10px;
     background-color: #2F3136;
     padding: 5px;
     width: 50px;
@@ -97,40 +97,129 @@ button:active {
 
 #Level {
     display: inline-block;
-    margin: 10px;
+	user-select: none;
+	position: relative;
+	
+	margin-bottom: 20px;
 }
 
-#Export, #Import {
-    margin: 0 5px 0 10px;
+.tile {
+	width: 48px;
+	height: 48px;
+	border-radius: 5px;
+}
+body:not(.resizing) .tile:not(.locked):hover {
+	filter: brightness(1.15);
+	background-color: #fff5;
+}
+
+#Resize-Handle {
+	width: 20px;
+	height: 20px;
+	background: white;
+	border-radius: 100%;
+	padding: 0;
+	transition: width, height, top, left;
+	transition-duration: 0.1s;
+	
+	position: absolute;
+	top: -10px;
+	left: -10px;
+	z-index: 1;
+	
+	cursor: grab;
+	resize: both;
+}
+#Resize-Handle:hover {
+	width: 32px;
+	height: 32px;
+	top: -16px;
+	left: -16px;
+	z-index: 3;
+}
+#Resize-Handle:active {
+	cursor: inherit;
+	width: 26px;
+	height: 26px;
+	top: -13px;
+	left: -13px;
+	z-index: 3;
+}
+
+body.resizing, body.resizing * {
+	cursor: grabbing;
+}
+
+#Toolbar, #Warning {
+    border-radius: 5px;
+	background-color: #2f3136;
 }
 
 #Warning {
-    margin: 10px;
-    color: red;
-    font-size: 20px;
-    font-family: "Uni Sans Bold";
-    display: none;
+	display: none;
+	text-align: right;
+	padding: 10px;
+}
+#Warning-Container {
+	text-align: right;
+	position: fixed;
+	bottom: 113px;
+	right: 10px;
+	z-index: 2;
 }
 
-#File-Stuff {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    color: white;
-    font-family: "Uni Sans Bold";
+#Warning-Close {
+	margin-left: 5px;
+	width: 1.5em;
+	height: 1.5em;
+	padding: 0;
+}
+#Warning-Close::after {
+	content: "❌︎";
 }
 
-#File-Stuff input {
-    background-color: #2F3136;
-    border: none;
-    color: white;
-    padding: 5px;
-    margin: 10px;
-    border-radius: 5px;
+#Toolbar {
+	display: flex;
+	align-items: center;
+	position: sticky;
+	bottom: 10px;
+	padding: 5px;
+	z-index: 2;
+}
+#Toolbar-Left, #Toolbar-Right {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+#Toolbar-Right {
+	flex-grow: 1;
+	flex-shrink: 1;
+	justify-content: right;
+	padding-right: 10px;
+}
+#Size {
+	margin-right: 10px;
 }
 
-#File-Stuff p {
-    margin: -8px;
-    color: white;
-    font-family: "Uni Sans Bold";
+button.tool-button:not(.selected) {
+	background-color: #4F545c;
+}
+body button.tool-button:not(.selected):hover {
+	background-color: #686D73;
+}
+body button.tool-button:not(.selected):active {
+	background-color: #72767D;
+}
+
+button.tool {
+	margin: 5px;
+}
+
+body img.emoji {
+	width: 48px;
+	height: 48px;
+}
+
+#Size {
+	text-align: right;
 }
