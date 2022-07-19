@@ -1,360 +1,482 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="styles/main.css" />
-        <title>A4D Level Editor</title>
-        <script
-            src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
-            crossorigin="anonymous"
-        ></script>
-        <script>
-            window.onload = function () {
-                twemoji.parse(document.body, {
-                    folder: "svg",
-                    ext: ".svg",
-                });
-            };
-        </script>
-        <style>
-            img.emoji {
-                width: 3em;
-                pointer-events: none;
-                -webkit-user-select: none;        
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-            }
-        </style>
-        <link
-            rel="apple-touch-icon"
-            sizes="120x120"
-            href="favicons/apple-touch-icon.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="favicons/favicon-32x32.png"
-        />
-        <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="favicons/favicon-16x16.png"
-        />
-        <link rel="manifest" href="favicons/site.webmanifest" />
-        <link
-            rel="mask-icon"
-            href="favicons/safari-pinned-tab.svg"
-            color="#5bbad5"
-        />
-        <link rel="shortcut icon" href="favicons/favicon.ico" />
-        <meta name="msapplication-TileColor" content="#da532c" />
-        <meta
-            name="msapplication-config"
-            content="favicons/browserconfig.xml"
-        />
-    </head>
-    <body>
-        <div id="Top">
-            <h1>Appel for DISCORD Level Editor</h1>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="https://discord.gg/aR8pBRXYd3">Discord</a>
-                    </li>
-                    <li>
-                        <a href="https://wasteof.money/posts/62d300eb67a84704d267027b">Help</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <p id="Warning"></p>
-        <input type="text" id="Width" type="number" placeholder="Width" />
-        <input type="text" id="Height" type="number" placeholder="Height" />
-        <button id="Create">Create</button>
-        <br>
-        <section id="Level"></section>
-        <br>
-        <div id="File-Stuff">
-            <input id="Level-Name" placeholder="Level Name"></input>
-            <p>.a4d</p>
-        </div>
-        <button id="Import">Import File</button>
-        <button id="Export">Export File</button>
-        <script>
-            let width = document.getElementById("Width");
-            let height = document.getElementById("Height");
-            let createButton = document.getElementById("Create");
-            let levelSection = document.getElementById("Level");
-            let levelObject = {
-                width: 0,
-                height: 0,
-                obstacles: [],
-                apples: [],
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="styles/main.css" />
+		<title>A4D Level Editor</title>
+		<script
+			src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+			crossorigin="anonymous"
+		></script>
+		<script>
+			window.onload = function () {
+				twemoji.parse(document.body, {
+					folder: "svg",
+					ext: ".svg",
+				});
+			};
+		</script>
+		<style>
+			img.emoji {
+				width: 3em;
+				pointer-events: none;
+				-webkit-user-select: none;		
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+		</style>
+		<link
+			rel="apple-touch-icon"
+			sizes="120x120"
+			href="favicons/apple-touch-icon.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="favicons/favicon-32x32.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="16x16"
+			href="favicons/favicon-16x16.png"
+		/>
+		<link rel="manifest" href="favicons/site.webmanifest" />
+		<link
+			rel="mask-icon"
+			href="favicons/safari-pinned-tab.svg"
+			color="#5bbad5"
+		/>
+		<link rel="shortcut icon" href="favicons/favicon.ico" />
+		<meta name="msapplication-TileColor" content="#da532c" />
+		<meta
+			name="msapplication-config"
+			content="favicons/browserconfig.xml"
+		/>
+	</head>
+	<body>
+		<div id="Top">
+			<h1>Appel for DISCORD Level Editor</h1>
+			<nav>
+				<ul>
+					<li>
+						<a href="https://discord.gg/aR8pBRXYd3">Discord</a>
+					</li>
+					<li>
+						<a href="https://wasteof.money/posts/62d300eb67a84704d267027b">Help</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<br />
+		<section id="Level">
+			<button draggable="true" id="Resize-Handle"></button>
+		</section>
+		<div id="Warning-Container">
+			<div id="Warning">
+				<span id="Warning-Text"></span>
+				<button class="tool-button" id="Warning-Close">
+					&Cross;
+				</button>
+			</div>
+		</div>
+		<section id="Toolbar">
+			<div id="Toolbar-Left">
+				<button title="Erase" data-tool="erase" class="tool tool-button">
+					🟦
+				</button>
+				<button title="Ground" data-tool="obstacle" class="tool tool-button selected">
+					🟩
+				</button>
+				<button title="Apple" data-tool="apple" class="tool tool-button">
+					🍏
+				</button>
+				<button title="Mob" data-tool="enemy" class="tool tool-button">
+					🟥
+				</button>
+				<button title="Checkpoint" data-tool="checkpoint" class="tool tool-button">
+					🏁
+				</button>
+				<button title="Spike" data-tool="spike" class="tool tool-button">
+					🔼
+				</button>
+				<!--
+				"you can ignore the moving platforms"
+				<button title="Moving Platform" data-tool="moving" class="tool tool-button">
+					🇲
+				</button>
+				-->
+			</div>
+			<div id="Toolbar-Right">
+				<span id="Size"></span>
+				<button title="Pick" data-tool="pick" class="tool tool-button">
+					📋
+				</button>
+				<button title="Clear Level" data-tool="_clear" class="tool tool-button">
+					📄
+				</button>
+				<button title="Export Level" data-tool="_export" class="tool tool-button">
+					💾
+				</button>
+				<button title="Import Level" data-tool="_import" class="tool tool-button">
+					📂
+				</button>
+			</div>
+		</section>
+		<script>
+			let levelSection = document.getElementById("Level");
+			let resizeHandle = document.getElementById("Resize-Handle");
+			let size = document.getElementById("Size");
+			let toolbar = document.getElementById("Toolbar");
+			let warningText = document.getElementById("Warning-Text");
+			let warning = document.getElementById("Warning");
+			
+			const TILES = {
+				SKY: "🟦",
+				OBSTACLE: "🟩",
+				APPLE: "🍏",
+				ENEMY: "🟥",
+				CHECKPOINT: "🏁",
+				SPIKE: "🔼",
+				MOVING: "🇲",
+			}
+			
+			let levelObject = {
+				width: 0,
+				height: 0,
+				obstacles: [],
+				apples: [],
                 bigApple: {},
-                enemies: [],
-                checkpoints: [],
+				enemies: [],
+				checkpoints: [],
                 spikes: [],
                 moving: [],
-            }
-            const editor = () => {
-                console.log(levelObject)
-                let classElements = document.getElementsByClassName("tile")
-                for (let i = 0; i < classElements.length; i++) {
-                    let key = undefined
-                    let keyHeld = false
-                    document.addEventListener("keydown", (e) => {
-                        key = e.key
-                        keyHeld = true
-                    })
-                    document.addEventListener("keyup", (e) => {
-                        key = undefined
-                        keyHeld = false
-                    })
-                    classElements[i].addEventListener("click", () => {
-                        if (classElements[i].classList.contains("sky")) {
-                            if (classElements[i].classList.contains("obstacle")) {
-                                classElements[i].classList.remove("obstacle")
-                                classElements[i].innerText = "🟦"
-                                let objectIndex = levelObject.obstacles.findIndex((element) => {
-                                    return element.x == classElements[i].id.split("-")[1] && element.y == classElements[i].id.split("-")[0]
-                                })
-                                levelObject.obstacles.splice(objectIndex, 1)
-                            } else if (classElements[i].classList.contains("enemy")) {
-                                classElements[i].classList.remove("enemy")
-                                classElements[i].innerText = "🟦"
-                                let objectIndex = levelObject.enemies.findIndex((element) => {
-                                    return element.x == classElements[i].id.split("-")[1] && element.y == classElements[i].id.split("-")[0]
-                                })
-                                levelObject.enemies.splice(objectIndex, 1)
-                            } else if (classElements[i].classList.contains("apple")) {
-                                classElements[i].classList.remove("apple")
-                                classElements[i].innerText = "🟦"
-                                let objectIndex = levelObject.apples.findIndex((element) => {
-                                    return element.x == classElements[i].id.split("-")[1] && element.y == classElements[i].id.split("-")[0]
-                                })
-                                levelObject.apples.splice(objectIndex, 1)
-                            } else if (classElements[i].classList.contains("checkpoint")) {
-                                classElements[i].classList.remove("checkpoint")
-                                classElements[i].innerText = "🟦"
-                                let objectIndex = levelObject.checkpoints.findIndex((element) => {
-                                    return element.x == classElements[i].id.split("-")[1] && element.y == classElements[i].id.split("-")[0]
-                                })
-                                levelObject.checkpoints.splice(objectIndex, 1)
-                            } else if (classElements[i].classList.contains("spike")) {
-                                classElements[i].classList.remove("spike")
-                                classElements[i].innerText = "🟦"
-                                let objectIndex = levelObject.spikes.findIndex((element) => {
-                                    return element.x == classElements[i].id.split("-")[1] && element.y == classElements[i].id.split("-")[0]
-                                })
-                                levelObject.spikes.splice(objectIndex, 1)
-                            } else if (classElements[i].classList.contains("moving")) {
-                                classElements[i].classList.remove("moving")
-                                classElements[i].innerText = "🟦"
-                                let objectIndex = levelObject.moving.findIndex((element) => {
-                                    return element.x == classElements[i].id.split("-")[1] && element.y == classElements[i].id.split("-")[0]
-                                })
-                                levelObject.moving.splice(objectIndex, 1)
-                            } else {
-                                if (event.shiftKey) {
-                                    classElements[i].classList.add("enemy")
-                                    classElements[i].innerText = "🟥"
-                                    levelObject.enemies.push({
-                                        x: classElements[i].id.split("-")[1],
-                                        y: classElements[i].id.split("-")[0],
-                                    })
-                                } else if (event.altKey) {
-                                    classElements[i].classList.add("apple")
-                                    classElements[i].innerText = "🍏"
-                                    levelObject.apples.push({
-                                        x: classElements[i].id.split("-")[1],
-                                        y: classElements[i].id.split("-")[0],
-                                    })
-                                } else if (event.ctrlKey) {
-                                    classElements[i].classList.add("checkpoint")
-                                    classElements[i].innerText = "🏁"
-                                    levelObject.checkpoints.push({
-                                        x: classElements[i].id.split("-")[1],
-                                        y: classElements[i].id.split("-")[0],
-                                    })
-                                } else if (key == "e") {
-                                    classElements[i].classList.add("spike")
-                                    classElements[i].innerText = "🔼"
-                                    levelObject.spikes.push({
-                                        x: parseInt(classElements[i].id.split("-")[1]),
-                                        y: parseInt(classElements[i].id.split("-")[0]),
-                                    });
-                                // } else if (key == "q") {
-                                //     // wait until keyHeld is false
-                                //     while (keyHeld) {
-                                //         continue
-                                //     }
-                                //     let direction = prompt("Direction:").toLowerCase()
-                                //     let blocks = prompt("Blocks:")
-                                //     const validDirections = ["up", "down", "left", "right"]
-                                //     if (!validDirections.includes(direction)) {
-                                //         alert("Invalid direction")
-                                //         return
-                                //     } else if (isNaN(blocks) || blocks.length < 1) {
-                                //         alert("Invalid number of blocks to move")
-                                //         return
-                                //     }
-                                //     classElements[i].classList.add("moving")
-                                //     classElements[i].innerText = "🇲"
-                                //     console.log(blocks)
-                                //     levelObject.moving.push({
-                                //         x: parseInt(classElements[i].id.split("-")[1]),
-                                //         y: parseInt(classElements[i].id.split("-")[0]),
-                                //         direction: direction,
-                                //         blocks: blocks.toNumber(),
-                                //     });
-                                } else {
-                                    classElements[i].classList.add("obstacle")
-                                    classElements[i].innerText = "🟩"
-                                    levelObject.obstacles.push({
-                                        x: parseInt(classElements[i].id.split("-")[1]),
-                                        y: parseInt(classElements[i].id.split("-")[0]),
-                                    });
-                                }
-                            }
-                        }
-                        twemoji.parse(document.body, {
-                            folder: "svg",
-                            ext: ".svg",
-                        });
-                    })
-                }
-            }
-            const download = (text) => {
-                let element = document.createElement("a");
-                element.setAttribute(
-                    "href",
-                    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-                );
-                let filename = document.getElementById("Level-Name").value;
-                if (filename == "") {
-                    document.getElementById("Warning").style.display = "block";
-                    document.getElementById("Warning").innerHTML = "Warning: Please enter a file name.";
-                    return;
-                } else {
-                    document.getElementById("Warning").style.display = "none";
-                }
-                element.setAttribute("download", filename + ".a4d");
-                element.style.display = "none";
-                document.body.appendChild(element);
-                element.click();
-                document.body.removeChild(element);
-            }
-            const importFile = async () => {
-                let input = document.createElement("input");
-                input.type = "file";
-                input.accept = ".a4d";
-                input.click();
-                input.onchange = async () => {
-                    let file = JSON.parse(await input.files[0].text())
-                    for (let key in levelObject) {
-                        if (file[key] == undefined) {
-                            document.getElementById("Warning").style.display = "block";
-                            document.getElementById("Warning").innerHTML = "Warning: The file you imported is either different or came from an old version of the editor.";
-                            file[key] = [];
-                        } else {
-                            document.getElementById("Warning").style.display = "none";
-                            levelObject[key] = file[key];
-                        }
-                    }
-                    levelSection.innerHTML = "";
-                    for (let i = 0; i < file.height; i++) {
-                        let div = document.createElement("div");
-                        div.classList.add("row");
-                        for (let j = 0; j < file.width; j++) {
-                            let tile = document.createElement("div");
-                            tile.classList.add("tile");
-                            if (i < file.height - 2) {
-                                if (file.obstacles?.some(obstacle => obstacle.x == j && obstacle.y == i)) {
-                                    tile.classList.add("obstacle");
-                                    tile.innerText = "🟩"
-                                } else if (file.apples?.some(apple => apple.x == j && apple.y == i)) {
-                                    tile.classList.add("apple");
-                                    tile.innerText = "🍏"
-                                } else if (file.enemies?.some(enemy => enemy.x == j && enemy.y == i)) {
-                                    tile.classList.add("enemy");
-                                    tile.innerText = "🟥"
-                                } else if (file.checkpoints?.some(checkpoint => checkpoint.x == j && checkpoint.y == i)) {
-                                    tile.classList.add("checkpoint");
-                                    tile.innerText = "🏁"
-                                } else if (file.spikes?.some(spike => spike.x == j && spike.y == i)) {
-                                    tile.classList.add("spike")
-                                    tile.innerText = "🔼"
-                                } else if (file.moving?.some(move => move.x == j && move.y == i)) {
-                                    tile.classList.add("moving")
-                                    tile.innerText = "🇲"
-                                } else {
-                                    tile.innerText = "🟦"
-                                }
-                                tile.classList.add("sky")
-                            } else {
-                                tile.innerText = "🟩"
-                                tile.classList.add("ground")
-                            }
-                            tile.id = `${i}-${j}`;
-                            div.appendChild(tile);
-                        }
-                        levelSection.appendChild(div);
-                        twemoji.parse(document.body, {
-                            folder: "svg",
-                            ext: ".svg",
-                        });
-                    }
-                    editor();
-                }
-            }
-            createButton.addEventListener("click", () => {
-                if (isNaN(width.value) || isNaN(height.value)) {
-                    alert("Enter a valid Number!");
-                    levelSection.innerHTML = "Invalid number!";
-                    return;
-                } else {
-                    alert("Level Created!");
-                }
-                levelObject.width = width.value;
-                levelObject.height = height.value;
-                levelSection.innerHTML = "";
-                for (let i = 0; i < height.value; i++) {
-                    let div = document.createElement("div");
-                    div.classList.add("row");
-                    for (let j = 0; j < width.value; j++) {
-                        let tile = document.createElement("div");
-                        tile.classList.add("tile");
-                        if (i < height.value - 2) {
-                            tile.innerText = "🟦"
-                            tile.classList.add("sky")
-                        } else {
-                            tile.innerText = "🟩"
-                            tile.classList.add("ground")
-                        }
-                        tile.id = `${i}-${j}`;
-                        div.appendChild(tile);
-                    }
-                    levelSection.appendChild(div);
-                }
-                editor()
-                twemoji.parse(document.body, {
-                    folder: "svg",
-                    ext: ".svg",
-                });
-            });
-            document.getElementById("Export").addEventListener("click", () => {
-                download(JSON.stringify(levelObject));
-            });
-            document.getElementById("Import").addEventListener("click", () => {
-                importFile().then(() => {
-                    editor();
-                })
-            })
-        </script>
-    </body>
+			}
+			let realWidth, realHeight;
+			let selectedTool = "obstacle";
+			
+			levelSection.addEventListener("mousedown", doClick);
+			levelSection.addEventListener("mousemove", doClick);
+			levelSection.addEventListener("contextmenu", (ev) => {
+				const tile = ev.target;
+				if (!tile || !tile.classList.contains("tile")) return;
+				
+				ev.preventDefault();
+			});
+			
+			function doClick(ev) {
+				if (!ev.buttons) return;
+				if (resizing) return;
+				
+				const tile = ev.target;
+				if (!tile || !tile.classList.contains("tile")) return;
+				
+				if (tile.classList.contains("locked")) return;
+				
+				const posFunc = (element) =>
+					element.x === Number(tile.dataset.x) &&
+					element.y === Number(tile.dataset.y);
+				const eraseFunc = (element) =>
+					element.x !== Number(tile.dataset.x) ||
+					element.y !== Number(tile.dataset.y);
+				const erase = () => {
+					levelObject.obstacles = levelObject.obstacles.filter(eraseFunc);
+					levelObject.apples = levelObject.apples.filter(eraseFunc);
+					levelObject.enemies = levelObject.enemies.filter(eraseFunc);
+					levelObject.checkpoints = levelObject.checkpoints.filter(eraseFunc);
+					levelObject.spikes = levelObject.spikes.filter(eraseFunc);
+					levelObject.moving = levelObject.moving.filter(eraseFunc);
+				}
+				
+				if (selectedTool === "pick" || ev.buttons & 4) {
+					if (levelObject.obstacles.some(posFunc)) {
+						selectedTool = "obstacle";
+					} else if (levelObject.enemies.some(posFunc)) {
+						selectedTool = "enemy";
+					} else if (levelObject.apples.some(posFunc)) {
+						selectedTool = "apple";
+					} else if (levelObject.checkpoints.some(posFunc)) {
+						selectedTool = "checkpoint";
+					} else if (levelObject.moving.some(posFunc)) {
+						selectedTool = "moving";
+					} else if (levelObject.spikes.some(posFunc)) {
+						selectedTool = "spike";
+					} else {
+						selectedTool = "erase";
+					}
+					updateTool();
+					
+					ev.preventDefault();
+				} else if (ev.buttons & 2 || selectedTool === "erase") {
+					tile.dataset.tile = TILES.SKY;
+					erase();
+				} else if (ev.buttons & 1) {
+					const xy = {
+						x: Number(tile.dataset.x),
+						y: Number(tile.dataset.y),
+					};
+					erase();
+					if (selectedTool === "enemy") {
+						tile.dataset.tile = TILES.ENEMY;
+						levelObject.enemies.push(xy);
+					} else if (selectedTool === "apple") {
+						tile.dataset.tile = TILES.APPLE;
+						levelObject.apples.push(xy);
+					} else if (selectedTool === "checkpoint") {
+						tile.dataset.tile = TILES.CHECKPOINT;
+						levelObject.checkpoints.push(xy);
+					} else if (selectedTool === "spike") {
+						tile.dataset.tile = TILES.SPIKE;
+						levelObject.spikes.push(xy);
+					} else if (selectedTool === "moving") {
+						tile.dataset.tile = TILES.MOVING;
+						levelObject.moving.push(xy);
+					} else {
+						tile.dataset.tile = TILES.OBSTACLE;
+						levelObject.obstacles.push(xy);
+					}
+				}
+								
+				tile.innerText = tile.dataset.tile;
+				twemoji.parse(document.body, {
+					folder: "svg",
+					ext: ".svg",
+				});
+			}
+			
+			const download = (text) => {
+				let element = document.createElement("a");
+				element.setAttribute(
+					"href",
+					"data:text/plain;charset=utf-8," + encodeURIComponent(text)
+				);
+				element.setAttribute("download", "level.a4d");
+				element.style.display = "none";
+				document.body.appendChild(element);
+				element.click();
+				document.body.removeChild(element);
+			}
+			const importFile = async () => {
+				let input = document.createElement("input");
+				input.type = "file";
+				input.accept = ".a4d";
+				input.click();
+				input.onchange = async () => {
+					warning.style.display = "";
+					let file;
+					try {
+						file = JSON.parse(await input.files[0].text())
+					} catch(e) {
+						console.error("error loading level:", e);
+						warning.style.display = "inline-block";
+						warningText.innerText = "The file you imported is not a valid .a4d file.";
+						return;
+					}
+					/*
+						why should we intentionally limit backwards compatibility
+						for (let key in levelObject) {
+							if (file[key] == undefined) {
+								warning.style.display = "inline-block";
+								warningText.innerText = "The file you imported is either different or came from an old version of the editor.";
+							}
+						}
+					*/
+					const ch = o => isNaN(o) ? null : o;
+					const t = e => {
+						throw e;
+					};
+					try {
+						levelObject = {
+							width: ch(file.width)
+								|| t(new Error("width must be a number!")),
+							height: ch(file.height)
+								|| t(new Error("height must be a number!")),
+							obstacles: file.obstacles
+								|| t(new Error("The obstacles array must exist!")),
+							apples: file.apples
+								|| t(new Error("The apples array must exist!")),
+							bigApple: file.bigApple || {},
+							enemies: file.enemies
+								|| t(new Error("The enemies array must exist!")),
+							checkpoints: file.checkpoints
+								|| t(new Error("The checkpoints array must exist!")),
+							spikes: file.spikes || [],
+							moving: file.moving || [],
+						}
+					} catch (e) {
+						console.error("error loading level:", e);
+						warning.style.display = "inline-block";
+						warningText.innerText = "" + e;
+					}
+					realWidth = levelObject.width * 48;
+					realHeight = levelObject.height * 48;
+					cleanup();
+					createLevel();
+				}
+			}
+			
+			levelObject.width = 21;
+			levelObject.height = 15;
+			realWidth = levelObject.width * 48;
+			realHeight = levelObject.height * 48;
+			createLevel();
+			
+			function cleanup() {
+				const filter = el => !isNaN(el.x) && !isNaN(el.y) &&
+					el.x >= 0 &&
+					el.y >= 0 &&
+					el.x < levelObject.width &&
+					el.y < levelObject.height - 2;
+				levelObject.obstacles = levelObject.obstacles.filter(filter);
+				levelObject.apples = levelObject.apples.filter(filter);
+				levelObject.checkpoints = levelObject.checkpoints.filter(filter);
+				levelObject.enemies = levelObject.enemies.filter(filter);
+				levelObject.spikes = levelObject.spikes.filter(filter);
+				levelObject.moving = levelObject.moving.filter(filter);
+			}
+			function createLevel() {
+				document.querySelectorAll(".row, .tile").forEach(e => e.remove());
+				for (let y = 0; y < levelObject.height; y++) {
+					let div = document.createElement("div");
+					div.classList.add("row");
+					for (let x = 0; x < levelObject.width; x++) {
+						let tile = document.createElement("div");
+						tile.classList.add("tile");
+						
+						if (y < levelObject.height - 2) {
+							const posMatch = obj => obj.x === x && obj.y === y;
+							if (levelObject.obstacles?.some(posMatch)) {
+								tile.dataset.tile = TILES.OBSTACLE;
+							} else if (levelObject.apples?.some(posMatch)) {
+								tile.dataset.tile = TILES.APPLE;
+							} else if (levelObject.enemies?.some(posMatch)) {
+								tile.dataset.tile = TILES.ENEMY;
+							} else if (levelObject.checkpoints?.some(posMatch)) {
+								tile.dataset.tile = TILES.CHECKPOINT;
+							} else if (levelObject.spikes?.some(posMatch)) {
+								tile.dataset.tile = TILES.SPIKE;
+							} else if (levelObject.moving?.some(posMatch)) {
+								tile.dataset.tile = TILES.MOVING;
+							} else {
+								tile.dataset.tile = TILES.SKY;
+							}
+						} else {
+							tile.dataset.tile = TILES.OBSTACLE;
+							tile.classList.add("locked");
+						}
+						tile.innerText = tile.dataset.tile;
+						tile.dataset.x = x;
+						tile.dataset.y = y;
+						div.appendChild(tile);
+					}
+					levelSection.appendChild(div);
+					twemoji.parse(document.body, {
+						folder: "svg",
+						ext: ".svg",
+					});
+					updateHandle();
+				}
+			}
+			
+			let resizing = false;
+			resizeHandle.addEventListener("mousedown", () => {
+				resizing = true;
+				document.body.classList.add("resizing");
+			});
+			window.addEventListener("mousemove", (ev) => {
+				if (!resizing) return;
+				const levelRect = levelSection.getBoundingClientRect();
+				
+				realWidth = ev.clientX - levelRect.left;
+				realHeight = ev.clientY - levelRect.top;
+				
+				updateHandle();
+			});
+			window.addEventListener("mouseup", () => {
+				document.body.classList.remove("resizing");
+				if (!resizing) return;
+				resizing = false;
+				
+				const ceilW = Math.max(1,
+					Math.round(realWidth / 48)
+				);
+				const ceilH = Math.max(1,
+					Math.round(realHeight / 48)
+				);
+				if (
+					ceilW !== levelObject.width ||
+					ceilH !== levelObject.height
+				) {
+					levelObject.width = ceilW;
+					levelObject.height = ceilH;
+					cleanup();
+					createLevel();
+				}
+				realWidth = ceilW * 48;
+				realHeight = ceilH * 48;
+				updateHandle();
+			});
+			function updateHandle() {
+				const ceilW = Math.max(1,
+					Math.round(realWidth / 48)
+				);
+				const ceilH = Math.max(1,
+					Math.round(realHeight / 48)
+				);
+				resizeHandle.style.transform =
+					`translate(${ceilW*48}px, ${ceilH*48}px)`;
+				size.textContent = `Size: ${ceilW}x${ceilH}`;
+			}
+			
+			twemoji.parse(document.body, {
+				folder: "svg",
+				ext: ".svg",
+			});
+			
+			document.getElementById("Warning-Close").addEventListener("click", () => {
+				warning.style.display = "";
+			})
+			
+			toolbar.addEventListener("click", (ev) => {
+				if (!ev.target || !ev.target.classList.contains("tool")) return;
+				const tool = ev.target.dataset.tool;
+				
+				switch (tool) {
+					case "_clear":
+						if (!confirm("Are you sure you want to clear the level?")) return;
+						levelObject.obstacles = [];
+						levelObject.enemies = [];
+						levelObject.checkpoints = [];
+						levelObject.apples = [];
+						levelObject.spikes = [];
+						levelObject.moving = [];
+						levelObject.bigApple = {};
+						createLevel();
+					break;
+					case "_export":
+						download(JSON.stringify(levelObject));
+					break;
+					case "_import":
+						importFile();
+					break;
+				}
+				if (tool.startsWith("_")) return;
+				
+				selectedTool = tool;
+				updateTool();
+			});
+			function updateTool() {
+				document.querySelectorAll(".tool").forEach(
+					el => el.classList.remove("selected")
+				);
+				document.querySelector(
+					`button.tool[data-tool="${selectedTool}"]`
+				)?.classList.add("selected");
+			}
+		</script>
+	</body>
 </html>
