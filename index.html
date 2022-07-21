@@ -295,15 +295,11 @@
 								|| t(new Error("width must be a number!")),
 							height: ch(file.height)
 								|| t(new Error("height must be a number!")),
-							obstacles: file.obstacles
-								|| t(new Error("The obstacles array must exist!")),
-							apples: file.apples
-								|| t(new Error("The apples array must exist!")),
+							obstacles: file.obstacles || [],
+							apples: file.apples || [],
 							bigApple: file.bigApple || {},
-							enemies: file.enemies
-								|| t(new Error("The enemies array must exist!")),
-							checkpoints: file.checkpoints
-								|| t(new Error("The checkpoints array must exist!")),
+							enemies: file.enemies || [],
+							checkpoints: file.checkpoints || [],
 							spikes: file.spikes || [],
 							moving: file.moving || [],
 						}
