@@ -303,24 +303,24 @@
 							spikes: file.spikes || [],
 							moving: file.moving || [],
 						}
+						// Fix old levels that had X and Y object positions stored as strings
+						for (const key in ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
+							levelObject[key] = levelObject[key].map(v => ({
+								...v,
+								x: Number(v.x),
+								y: Number(v.y),
+							}));
+						}
+						realWidth = levelObject.width * 48;
+						realHeight = levelObject.height * 48;
+						cleanup();
+						createLevel();
 					} catch (e) {
 						console.error("error loading level:", e);
 						warning.style.display = "inline-block";
-						warningText.innerText = "" + e;
+						warningText.innerText = "Error loading the level. See the browser console for more info.";
 						return;
 					}
-					// Fix old levels that had X and Y object positions stored as strings
-					for (const key in ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
-						levelObject[key] = levelObject[key].map(v => {
-							...v,
-							x: Number(v.x),
-							y: Number(v.y),
-						})
-					}
-					realWidth = levelObject.width * 48;
-					realHeight = levelObject.height * 48;
-					cleanup();
-					createLevel();
 				}
 			}
 			
