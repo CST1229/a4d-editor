@@ -307,6 +307,15 @@
 						console.error("error loading level:", e);
 						warning.style.display = "inline-block";
 						warningText.innerText = "" + e;
+						return;
+					}
+					// Fix old levels that had X and Y object positions stored as strings
+					for (const key in ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
+						levelObject[key] = levelObject[key].map(v => {
+							...v,
+							x: Number(v.x),
+							y: Number(v.y),
+						})
 					}
 					realWidth = levelObject.width * 48;
 					realHeight = levelObject.height * 48;
