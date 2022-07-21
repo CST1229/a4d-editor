@@ -304,7 +304,7 @@
 							moving: file.moving || [],
 						}
 						// Fix old levels that had X and Y object positions stored as strings
-						for (const key in ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
+						for (const key of ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
 							levelObject[key] = levelObject[key].map(v => ({
 								...v,
 								x: Number(v.x),
