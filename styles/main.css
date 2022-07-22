@@ -11,7 +11,7 @@
 body {
     background-color: #36393F;
     color: white;
-    font-family: "Uni Sans Bold";
+    font-family: "Uni Sans Bold", sans-serif;
 	padding: 10px;
     font-size: 20px;
 }
@@ -32,6 +32,15 @@ nav {
     color: white;
 }
 
+ul {
+	list-style: disc;
+	margin-left: 1em;
+}
+
+nav ul {
+	margin-left: 0;
+}
+
 nav ul li {
     list-style: none;
     display: inline-block;
@@ -39,11 +48,11 @@ nav ul li {
     color: white;
 }
 
-nav ul li a {
+a {
     text-decoration: none;
 }
 
-nav ul li a:hover {
+a:hover {
     text-decoration: underline;
 }
 
@@ -68,17 +77,17 @@ button {
     padding: 10px;
     border-radius: 5px;
 	cursor: inherit;
-	transition: background-color 0.17s ease;
+	transition: background-color 0.17s ease, opacity 0.17s ease;
 	font: inherit;
 	line-height: 0;
 }
 
-body:not(.resizing) button:hover {
+body:not(.resizing) button:not(:disabled):hover {
     background-color: #225F34;
     cursor: pointer;
 }
 
-body:not(.resizing) button:active {
+body:not(.resizing) button:not(:disabled):active {
     background-color: #1E532E;
 }
 
@@ -95,22 +104,64 @@ body:not(.resizing) button:active {
     border-radius: 5px;
 }
 
+#Level-Container {
+	padding-bottom: 96px;
+}
 #Level {
     display: inline-block;
 	user-select: none;
 	position: relative;
 	
 	margin-bottom: 20px;
+	
+	background-image: url("../images/background.png");
 }
 
 .tile {
 	width: 48px;
 	height: 48px;
-	border-radius: 5px;
+	background-repeat: no-repeat;
+	background-position: center;
+	/* to allow placing on "mix" tiles while them still being transparent */
+	filter: opacity(1);
 }
-body:not(.resizing) .tile:not(.locked):hover {
-	filter: brightness(1.15);
-	background-color: #fff5;
+/* Tile images */
+.tile[data-tile="🟩"] {
+	background-image: url("../images/obstacle.png");
+}
+.tile[data-tile="🍏"] {
+	background-image: url("../images/apple.png");
+}
+.tile[data-tile="🟥"] {
+	background-image: url("../images/enemy.png");
+}
+.tile[data-tile="🚩"] {
+	background-image: url("../images/checkpoint.png");
+}
+.tile[data-tile="🏁"] {
+	background-image: url("../images/goal.png");
+}
+.tile[data-tile="🔼"] {
+	background-image: url("../images/spike.png");
+}
+
+.tile.mix {
+	margin-right: -48px;
+}
+#Level:not(.screenshot-mode) .tile.mix {
+	filter: opacity(0.5);
+}
+.tile[data-tile="appel"] {
+	background-image: url("../images/appel-right.png");
+}
+
+body:not(.resizing) #Level:not(.screenshot-mode) .tile:not(.locked):hover {
+	filter: brightness(1.25);
+	background-color: #fffa;
+	outline: solid 2px #0005;
+	
+	transform: translate(0);
+	z-index: 1;
 }
 
 #Resize-Handle {
@@ -204,11 +255,16 @@ body.resizing, body.resizing * {
 button.tool-button:not(.selected) {
 	background-color: #4F545c;
 }
-body button.tool-button:not(.selected):hover {
+body button.tool-button:not(.selected):not(:disabled):hover {
 	background-color: #686D73;
 }
-body button.tool-button:not(.selected):active {
+body button.tool-button:not(.selected):not(:disabled):active {
 	background-color: #72767D;
+}
+
+button.tool-button {
+	width: 68px;
+	height: 68px;
 }
 
 button.tool {
@@ -222,4 +278,18 @@ body img.emoji {
 
 #Size {
 	text-align: right;
+}
+
+button:disabled {
+	opacity: 0.5;
+	cursor: auto;
+}
+
+button .tile {
+	pointer-events: none;
+}
+
+#Toolbar .tile[data-tile="🟦"] {
+	background-image: url("../images/erase.png");
+	background-image: url("../images/erase.png");
 }

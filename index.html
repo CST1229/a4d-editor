@@ -10,6 +10,9 @@
 			src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
 			crossorigin="anonymous"
 		></script>
+		<script src=
+		"https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
+		</script>
 		<script>
 			window.onload = function () {
 				twemoji.parse(document.body, {
@@ -60,9 +63,15 @@
 	</head>
 	<body>
 		<div id="Top">
-			<h1>Appel for DISCORD Level Editor</h1>
+			<a href="index.html"><h1>Appel for DISCORD Level Editor (fork)</h1></a>
 			<nav>
 				<ul>
+					<li>
+						<a href="changelog.html">v2.0</a>
+					</li>
+					<li>
+						|
+					</li>
 					<li>
 						<a href="https://discord.gg/aR8pBRXYd3">Discord</a>
 					</li>
@@ -76,10 +85,12 @@
 			</nav>
 		</div>
 		<br />
-		<section id="Level">
-			<button draggable="true" id="Resize-Handle"></button>
+		<section id="Level-Container">
+			<div id="Level">
+				<button draggable="true" id="Resize-Handle" data-html2canvas-ignore></button>
+			</div>
 		</section>
-		<div id="Warning-Container">
+		<div id="Warning-Container" data-html2canvas-ignore>
 			<div id="Warning">
 				<span id="Warning-Text"></span>
 				<button class="tool-button" id="Warning-Close">
@@ -87,32 +98,78 @@
 				</button>
 			</div>
 		</div>
-		<section id="Toolbar">
+		<section id="Toolbar" data-html2canvas-ignore>
 			<div id="Toolbar-Left">
-				<button title="Erase" data-tool="erase" class="tool tool-button">
-					🟦
+				<button
+					title="Erase"
+					data-tool="erase"
+					class="tool tool-button"
+				>
+					<div
+						class="tile"
+						data-tile="🟦"
+					></div>
 				</button>
-				<button title="Ground" data-tool="obstacle" class="tool tool-button selected">
-					🟩
+				<button
+					title="Ground"
+					data-tool="obstacle" 
+					class="tool tool-button selected"
+				>
+					<div
+						class="tile"
+						data-tile="🟩"
+					></div>
 				</button>
-				<button title="Apple" data-tool="apple" class="tool tool-button">
-					🍏
+				<button
+					title="Apple"
+					data-tool="apple"
+					class="tool tool-button"
+				>
+					<div
+						class="tile"
+						data-tile="🍏"
+					></div>
 				</button>
-				<button title="Mob" data-tool="enemy" class="tool tool-button">
-					🟥
+				<button
+					title="Mob"
+					data-tool="enemy"
+					class="tool tool-button"
+				>
+					<div
+						class="tile"
+						data-tile="🟥"
+					></div>
 				</button>
-				<button title="Checkpoint" data-tool="checkpoint" class="tool tool-button">
-					🏁
-				</button>
-				<button title="Spike" data-tool="spike" class="tool tool-button">
-					🔼
+				<button
+					title="Spike"
+					data-tool="spike"
+					class="tool tool-button"
+				>
+					<div 
+						class="tile"
+						data-tile="🔼"
+					></div>
 				</button>
 				<!--
 				"you can ignore the moving platforms"
-				<button title="Moving Platform" data-tool="moving" class="tool tool-button">
+				<button
+					title="Moving Platform"
+					data-tool="moving"
+					class="tool tool-button"
+				>
 					🇲
 				</button>
 				-->
+				<button
+					title="Checkpoint/Goal"
+					data-tool="checkpoint"
+					class="tool tool-button"
+				>
+					<div
+						class="tile"
+						data-tile="🏁"
+					></div>
+				</button>
 			</div>
 			<div id="Toolbar-Right">
 				<span id="Size"></span>
@@ -121,6 +178,9 @@
 				</button>
 				<button title="Clear Level" data-tool="_clear" class="tool tool-button">
 					📄
+				</button>
+				<button title="Take Level Screenshot (hold shift to open in new tab instead of saving)" data-tool="_screenshot" class="tool tool-button">
+					📷
 				</button>
 				<button title="Export Level" data-tool="_export" class="tool tool-button">
 					💾
@@ -132,6 +192,7 @@
 		</section>
 		<script>
 			let levelSection = document.getElementById("Level");
+			let levelContainer = document.getElementById("Level-Container");
 			let resizeHandle = document.getElementById("Resize-Handle");
 			let size = document.getElementById("Size");
 			let toolbar = document.getElementById("Toolbar");
@@ -143,7 +204,8 @@
 				OBSTACLE: "🟩",
 				APPLE: "🍏",
 				ENEMY: "🟥",
-				CHECKPOINT: "🏁",
+				CHECKPOINT: "🚩",
+				GOAL: "🏁",
 				SPIKE: "🔼",
 				MOVING: "🇲",
 			}
@@ -193,6 +255,10 @@
 					levelObject.checkpoints = levelObject.checkpoints.filter(eraseFunc);
 					levelObject.spikes = levelObject.spikes.filter(eraseFunc);
 					levelObject.moving = levelObject.moving.filter(eraseFunc);
+					
+					if (tile.dataset.tile === TILES.GOAL) {
+						updateGoal();
+					}
 				}
 				
 				if (selectedTool === "pick" || ev.buttons & 4) {
@@ -215,8 +281,11 @@
 					
 					ev.preventDefault();
 				} else if (ev.buttons & 2 || selectedTool === "erase") {
-					tile.dataset.tile = TILES.SKY;
 					erase();
+					tile.dataset.tile = TILES.SKY;
+					if (oldTile === TILES.GOAL) {
+						updateGoal();
+					}
 				} else if (ev.buttons & 1) {
 					const xy = {
 						x: Number(tile.dataset.x),
@@ -232,6 +301,8 @@
 					} else if (selectedTool === "checkpoint") {
 						tile.dataset.tile = TILES.CHECKPOINT;
 						levelObject.checkpoints.push(xy);
+						
+						updateGoal();
 					} else if (selectedTool === "spike") {
 						tile.dataset.tile = TILES.SPIKE;
 						levelObject.spikes.push(xy);
@@ -243,21 +314,27 @@
 						levelObject.obstacles.push(xy);
 					}
 				}
-								
-				tile.innerText = tile.dataset.tile;
-				twemoji.parse(document.body, {
-					folder: "svg",
-					ext: ".svg",
-				});
 			}
 			
-			const download = (text) => {
-				let element = document.createElement("a");
-				element.setAttribute(
-					"href",
-					"data:text/plain;charset=utf-8," + encodeURIComponent(text)
-				);
-				element.setAttribute("download", "level.a4d");
+			function updateGoal() {
+				document.querySelectorAll(`#Level .tile[data-tile="${TILES.GOAL}"]`)
+					.forEach(e => e.dataset.tile = TILES.CHECKPOINT);
+				const lastCheck = levelObject.checkpoints.at(-1);
+				if (!lastCheck) return;
+				
+				const lastCheckEl = document.querySelector(`
+					#Level
+					.tile[data-tile="${TILES.CHECKPOINT}"][data-x="${Number(lastCheck.x)}"][data-y="${Number(lastCheck.y)}"]
+				`);
+				
+				if (!lastCheckEl) return;
+				lastCheckEl.dataset.tile = TILES.GOAL;
+			}
+			
+			const download = (text, filename) => {
+				const element = document.createElement("a");
+				element.href = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+				element.setAttribute("download", filename);
 				element.style.display = "none";
 				document.body.appendChild(element);
 				element.click();
@@ -347,13 +424,24 @@
 				levelObject.moving = levelObject.moving.filter(filter);
 			}
 			function createLevel() {
-				document.querySelectorAll(".row, .tile").forEach(e => e.remove());
+				document.querySelectorAll(".row").forEach(e => e.remove());
 				for (let y = 0; y < levelObject.height; y++) {
-					let div = document.createElement("div");
-					div.classList.add("row");
+					const row = document.createElement("div");
+					row.classList.add("row");
 					for (let x = 0; x < levelObject.width; x++) {
-						let tile = document.createElement("div");
+						const tile = document.createElement("div");
 						tile.classList.add("tile");
+						
+						if (y === levelObject.height - 3) {
+							if (x === 0) {
+								const mixTile = document.createElement("div");
+								mixTile.classList.add("tile", "locked", "mix");
+								mixTile.dataset.tile = "appel";
+								mixTile.dataset.x = x;
+								mixTile.dataset.y = y;
+								row.appendChild(mixTile);
+							}
+						}
 						
 						if (y < levelObject.height - 2) {
 							const posMatch = obj => obj.x === x && obj.y === y;
@@ -376,21 +464,21 @@
 							tile.dataset.tile = TILES.OBSTACLE;
 							tile.classList.add("locked");
 						}
-						tile.innerText = tile.dataset.tile;
 						tile.dataset.x = x;
 						tile.dataset.y = y;
-						div.appendChild(tile);
+						row.appendChild(tile);
 					}
-					levelSection.appendChild(div);
-					twemoji.parse(document.body, {
-						folder: "svg",
-						ext: ".svg",
-					});
-					updateHandle();
+					levelSection.appendChild(row);
 				}
+				realWidth = levelObject.width * 48;
+				realHeight = levelObject.height * 48;
+				updateHandle();
+				
+				updateGoal();
 			}
 			
 			let resizing = false;
+			let minHeight = 0;
 			resizeHandle.addEventListener("mousedown", () => {
 				resizing = true;
 				document.body.classList.add("resizing");
@@ -402,6 +490,12 @@
 				realWidth = ev.clientX - levelRect.left;
 				realHeight = ev.clientY - levelRect.top;
 				
+				const ceil = sizeUpdate();
+				if (ceil[1] > minHeight) {
+					minHeight = ceil[1];
+					levelContainer.style.minHeight = minHeight * 48 + "px";
+				}
+				
 				updateHandle();
 			});
 			window.addEventListener("mouseup", () => {
@@ -409,24 +503,16 @@
 				if (!resizing) return;
 				resizing = false;
 				
-				const ceilW = Math.max(1,
-					Math.round(realWidth / 48)
-				);
-				const ceilH = Math.max(1,
-					Math.round(realHeight / 48)
-				);
-				if (
-					ceilW !== levelObject.width ||
-					ceilH !== levelObject.height
-				) {
-					levelObject.width = ceilW;
-					levelObject.height = ceilH;
-					cleanup();
-					createLevel();
-				}
-				realWidth = ceilW * 48;
-				realHeight = ceilH * 48;
+				const ceil = sizeUpdate();
+				cleanup();
+				updateGoal();
+				
+				realWidth = ceil[0] * 48;
+				realHeight = ceil[1] * 48;
 				updateHandle();
+				
+				minHeight = 0;
+				levelContainer.style.minHeight = "";
 			});
 			function updateHandle() {
 				const ceilW = Math.max(1,
@@ -439,6 +525,23 @@
 					`translate(${ceilW*48}px, ${ceilH*48}px)`;
 				size.textContent = `Size: ${ceilW}x${ceilH}`;
 			}
+			function sizeUpdate() {
+				const ceilW = Math.max(1,
+					Math.round(realWidth / 48)
+				);
+				const ceilH = Math.max(1,
+					Math.round(realHeight / 48)
+				);
+				if (
+					ceilW !== levelObject.width ||
+					ceilH !== levelObject.height
+				) {
+					levelObject.width = ceilW;
+					levelObject.height = ceilH;
+					createLevel();
+				}
+				return [ceilW, ceilH];
+			}
 			
 			twemoji.parse(document.body, {
 				folder: "svg",
@@ -449,7 +552,7 @@
 				warning.style.display = "";
 			})
 			
-			toolbar.addEventListener("click", (ev) => {
+			toolbar.addEventListener("click", async (ev) => {
 				if (!ev.target || !ev.target.classList.contains("tool")) return;
 				const tool = ev.target.dataset.tool;
 				
@@ -466,10 +569,48 @@
 						createLevel();
 					break;
 					case "_export":
-						download(JSON.stringify(levelObject));
+						download(JSON.stringify(levelObject), "level.a4d");
 					break;
 					case "_import":
 						importFile();
+					break;
+					case "_screenshot":
+						ev.target.disabled = true;
+						await new Promise(r=>requestAnimationFrame(r));
+						await new Promise(r=>requestAnimationFrame(r));
+						levelSection.classList.add("screenshot-mode");
+						try {
+							const rect = levelSection.getBoundingClientRect();
+							
+							const canvas = await html2canvas(levelSection, {
+								x: rect.left,
+								y: rect.top,
+								scrollX: -window.scrollX,
+								scrollY: -window.scrollY,
+							});
+							
+							document.body.appendChild(canvas);
+							const dataURL = canvas.toDataURL();
+							canvas.remove();
+							
+							if (ev.shiftKey) {
+								window.open(dataURL);
+							} else {
+								const element = document.createElement("a");
+								element.href = dataURL;
+								element.setAttribute("download", "image.png");
+								element.style.display = "none";
+								document.body.appendChild(element);
+								element.click();
+								document.body.removeChild(element);
+							}
+						} catch(e) {
+							console.error("error taking screenshot:", e);
+							warning.style.display = "inline-block";
+							warningText.innerText = "Error taking a screenshot. See the browser console for more info.";
+						}
+						levelSection.classList.remove("screenshot-mode");
+						ev.target.disabled = false;
 					break;
 				}
 				if (tool.startsWith("_")) return;
