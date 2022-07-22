@@ -105,14 +105,12 @@ body:not(.resizing) button:not(:disabled):active {
 }
 
 #Level-Container {
-	padding-bottom: 96px;
+	margin-bottom: 116px;
 }
 #Level {
     display: inline-block;
 	user-select: none;
 	position: relative;
-	
-	margin-bottom: 20px;
 	
 	background-image: url("../images/background.png");
 }
