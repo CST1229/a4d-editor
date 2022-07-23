@@ -125,6 +125,7 @@ body:not(.resizing) button:not(:disabled):active {
 	overflow: hidden;
 	
 	background-image: url("../images/background.png");
+	background-color: #d4edf4;
 }
 
 .tile {
@@ -141,6 +142,7 @@ body:not(.resizing) button:not(:disabled):active {
 /* Tile images */
 .tile[data-tile="🟩"] {
 	background-image: url("../images/obstacle.png");
+	background-color: #39b54a;
 }
 .tile-stencil[data-tile="🟩"] {
 	display: inline-block;
@@ -316,6 +318,9 @@ body button.gray:not(.selected):not(:disabled):active {
 	width: 68px;
 	height: 68px;
 	line-height: 0;
+	
+	display: inline-flex;
+	flex-wrap: nowrap;
 }
 
 body img.emoji {
@@ -337,7 +342,7 @@ button:disabled {
 	cursor: auto;
 }
 
-button .tile {
+button * {
 	pointer-events: none;
 }
 

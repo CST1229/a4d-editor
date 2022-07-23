@@ -151,6 +151,10 @@
 						class="action gray selected icon-button"
 					>
 						<div
+							class="tile-stencil"
+							data-tile="🟩"
+						></div>
+						<div
 							class="tile"
 							data-tile="🟩"
 						></div>
@@ -263,12 +267,14 @@
 		<script>
 			document.getElementById("JS-Error").style.display = "";
 			
-			let levelSection = document.getElementById("Level");
-			let levelContainer = document.getElementById("Level-Container");
-			let resizeHandle = document.getElementById("Resize-Handle");
-			let size = document.getElementById("Size");
-			let toolbar = document.getElementById("Toolbar");
+			/// elements ///
+			const levelSection = document.getElementById("Level");
+			const levelContainer = document.getElementById("Level-Container");
+			const resizeHandle = document.getElementById("Resize-Handle");
+			const size = document.getElementById("Size");
+			const toolbar = document.getElementById("Toolbar");
 			
+			/// initialization ///
 			const TILES = {
 				SKY: "🟦",
 				OBSTACLE: "🟩",
@@ -294,6 +300,7 @@
 			let realWidth, realHeight;
 			let selectedTool = "obstacle";
 			
+			/// brushes ///
 			levelSection.addEventListener("mousedown", doClick);
 			levelSection.addEventListener("mousemove", doClick);
 			levelSection.addEventListener("contextmenu", (ev) => {
@@ -302,7 +309,6 @@
 				
 				ev.preventDefault();
 			});
-			
 			function doClick(ev) {
 				if (!ev.buttons) return;
 				if (resizing) return;
@@ -391,7 +397,6 @@
 					return;
 				stencil.dataset.tile = tile.dataset.tile;
 			}
-			
 			function updateGoal() {
 				document.querySelectorAll(`#Level .tile[data-tile="${TILES.GOAL}"]`)
 					.forEach(e => e.dataset.tile = TILES.CHECKPOINT);
@@ -407,6 +412,7 @@
 				lastCheckEl.dataset.tile = TILES.GOAL;
 			}
 			
+			/// level loading ///
 			const download = (text, filename) => {
 				const element = document.createElement("a");
 				element.href = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
@@ -480,6 +486,7 @@
 				}
 			}
 			
+			/// level creation and cleanup ///
 			levelObject.width = 21;
 			levelObject.height = 15;
 			realWidth = levelObject.width * 48;
@@ -559,6 +566,7 @@
 				updateGoal();
 			}
 			
+			/// level resizing ///
 			let resizing = false;
 			let minHeight = 0;
 			resizeHandle.addEventListener("mousedown", () => {
@@ -630,6 +638,7 @@
 				ext: ".svg",
 			});
 			
+			/// toolbar and action button stuff ///
 			document.body.addEventListener("click", async (ev) => {
 				if (!ev.target || !ev.target.classList.contains("action")) return;
 				const action = ev.target.dataset.action;
@@ -742,6 +751,8 @@
 				)?.classList.add("selected");
 			}
 			
+			
+			/// popup-related stuff ///
 			const popup = document.getElementById("Popup");
 			function hidePopup() {
 				popup.style.display = "";
@@ -764,6 +775,34 @@
 				hidePopup();
 			});
 			
+			/// drag and drop ///
+			document.documentElement.addEventListener("dragover", e => {
+				e.preventDefault();
+				e.dataTransfer.dropEffect = "copy";
+			});
+			
+			document.documentElement.addEventListener("drop", e => {
+				console.log(e.dataTransfer);
+				const file = e.dataTransfer.files[0];
+				if (file) {
+					e.preventDefault();
+					e.stopPropagation();
+				
+					const reader = new FileReader();
+					reader.readAsText(file);
+					reader.onloadend = () => {
+						loadLevel(reader.result);
+					};
+				
+					reader.onerror = (err) => {
+						console.error("error dropping file:", err);
+						showPopup("Error", "levelerror")
+						throw err;
+					};
+				}
+			});
+			
+			/// finally, start ///
 			document.getElementById("Editor").style.display = "block";
 		</script>
 	</body>
