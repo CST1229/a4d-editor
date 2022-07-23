@@ -13,23 +13,7 @@
 		<script src=
 		"https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js">
 		</script>
-		<script>
-			window.onload = function () {
-				twemoji.parse(document.body, {
-					folder: "svg",
-					ext: ".svg",
-				});
-			};
-		</script>
 		<style>
-			img.emoji {
-				width: 3em;
-				pointer-events: none;
-				-webkit-user-select: none;		
-				-moz-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
-			}
 		</style>
 		<link
 			rel="apple-touch-icon"
@@ -67,7 +51,7 @@
 			<nav>
 				<ul>
 					<li>
-						<a href="changelog.html">v2.0.1</a>
+						<a href="changelog.html">v2.1</a>
 					</li>
 					<li>
 						|
@@ -85,119 +69,205 @@
 			</nav>
 		</div>
 		<br />
-		<section id="Level-Container">
-			<div id="Level">
-				<button id="Resize-Handle" data-html2canvas-ignore></button>
-			</div>
-		</section>
-		<div id="Warning-Container" data-html2canvas-ignore>
-			<div id="Warning">
-				<span id="Warning-Text"></span>
-				<button class="tool-button" id="Warning-Close">
-					&Cross;
-				</button>
-			</div>
+		<noscript>
+			This website requires JavaScript to work. Please enable JavaScript, then refresh this page.
+		</noscript>
+		<div id="JS-Error">
+			Something went wrong running this website's scripts. See the browser console for more info.
 		</div>
-		<section id="Toolbar" data-html2canvas-ignore>
-			<div id="Toolbar-Left">
-				<button
-					title="Erase"
-					data-tool="erase"
-					class="tool tool-button"
-				>
-					<div
-						class="tile"
-						data-tile="🟦"
-					></div>
-				</button>
-				<button
-					title="Ground"
-					data-tool="obstacle" 
-					class="tool tool-button selected"
-				>
-					<div
-						class="tile"
-						data-tile="🟩"
-					></div>
-				</button>
-				<button
-					title="Apple"
-					data-tool="apple"
-					class="tool tool-button"
-				>
-					<div
-						class="tile"
-						data-tile="🍏"
-					></div>
-				</button>
-				<button
-					title="Mob"
-					data-tool="enemy"
-					class="tool tool-button"
-				>
-					<div
-						class="tile"
-						data-tile="🟥"
-					></div>
-				</button>
-				<button
-					title="Spike"
-					data-tool="spike"
-					class="tool tool-button"
-				>
-					<div 
-						class="tile"
-						data-tile="🔼"
-					></div>
-				</button>
-				<!--
-				"you can ignore the moving platforms"
-				<button
-					title="Moving Platform"
-					data-tool="moving"
-					class="tool tool-button"
-				>
-					🇲
-				</button>
-				-->
-				<button
-					title="Checkpoint/Goal"
-					data-tool="checkpoint"
-					class="tool tool-button"
-				>
-					<div
-						class="tile"
-						data-tile="🏁"
-					></div>
-				</button>
+		<div id="Editor">
+			<section id="Level-Container">
+				<div id="Level"></div>
+				<button id="Resize-Handle" data-html2canvas-ignore></button>
+			</section>
+			<div id="Popup-Container" data-html2canvas-ignore>
+				<div id="Popup">
+					<div id="Popup-Header">
+						<h2 id="Popup-Title"></h2>
+						<button class="gray" id="Popup-Close">
+							&Cross;
+						</button>
+					</div>
+					<div class="popup-content" data-id="invalida4d">
+						The file you imported is not a valid .a4d file.
+					</div>
+					<div class="popup-content" data-id="levelerror">
+						Error loading the level. See the browser console for more info
+					</div>
+					<div class="popup-content" data-id="screenshoterror">
+						Error taking a screenshot. See the browser console for more info.
+					</div>
+					<div class="popup-content" data-id="import">
+						<button
+							title="Download from URL"
+							data-action="urlpopup"
+							class="action gray icon-button"
+						>
+							🔗
+						</button>
+						<button
+							title="Open File"
+							data-action="import"
+							class="action gray icon-button"
+						>
+							📂
+						</button>
+					</div>
+					<div class="popup-content" data-id="importurl">
+						<div id="Download-URL-Status"></div>
+						<div class="flex">
+							<input
+								class="flex-grow"
+								autocomplete="false"
+								type="url"
+								placeholder="https://"
+								id="Download-URL-Input"
+							>
+							<button
+								class="action gray"
+								data-action="downloadurl"
+							>Download</button>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div id="Toolbar-Right">
-				<span id="Size"></span>
-				<button title="Pick" data-tool="pick" class="tool tool-button">
-					📋
-				</button>
-				<button title="Clear Level" data-tool="_clear" class="tool tool-button">
-					📄
-				</button>
-				<button title="Take Level Screenshot (hold shift to open in new tab instead of saving)" data-tool="_screenshot" class="tool tool-button">
-					📷
-				</button>
-				<button title="Export Level" data-tool="_export" class="tool tool-button">
-					💾
-				</button>
-				<button title="Import Level" data-tool="_import" class="tool tool-button">
-					📂
-				</button>
-			</div>
-		</section>
+			<section id="Toolbar" data-html2canvas-ignore>
+				<div id="Toolbar-Left">
+					<button
+						title="Erase"
+						data-action="tool"
+						data-tool="erase"
+						class="action gray icon-button"
+					>
+						<div
+							class="tile"
+							data-tile="🟦"
+						></div>
+					</button>
+					<button
+						title="Ground"
+						data-action="tool"
+						data-tool="obstacle" 
+						class="action gray selected icon-button"
+					>
+						<div
+							class="tile"
+							data-tile="🟩"
+						></div>
+					</button>
+					<button
+						title="Apple"
+						data-action="tool"
+						data-tool="apple"
+						class="action gray icon-button"
+					>
+						<div
+							class="tile"
+							data-tile="🍏"
+						></div>
+					</button>
+					<button
+						title="Mob"
+						data-action="tool"
+						data-tool="enemy"
+						class="action gray icon-button"
+					>
+						<div
+							class="tile"
+							data-tile="🟥"
+						></div>
+					</button>
+					<button
+						title="Spike"
+						data-action="tool"
+						data-tool="spike"
+						class="action gray icon-button"
+					>
+						<div 
+							class="tile"
+							data-tile="🔼"
+						></div>
+					</button>
+					<!--
+					"you can ignore the moving platforms"
+					<button
+						title="Moving Platform"
+						data-action="tool"
+						data-tool="moving"
+						class="action gray icon-button"
+					>
+						🇲
+					</button>
+					-->
+					<button
+						title="Checkpoint/Goal"
+						data-action="tool"
+						data-tool="checkpoint"
+						class="action gray icon-button"
+					>
+						<div
+							class="tile"
+							data-tile="🏁"
+						></div>
+					</button>
+					<!-- Very hacky way to make the browser "cache" the image -->
+					<div
+						class="tile hidden"
+						data-tile="🚩"
+					></div>
+				</div>
+				<div id="Toolbar-Right">
+					<span id="Size"></span>
+					<button
+						title="Pick" 
+						data-action="tool"
+						data-tool="pick" 
+						class="action gray icon-button"
+					>
+						📋
+					</button>
+					<button
+						title="Clear Level"
+						data-action="clear"
+						class="action gray icon-button"
+					>
+						📄
+					</button>
+					<button 
+						title="Take Level Screenshot (hold shift to open in new tab instead of saving)"
+						data-action="screenshot"
+						class="action gray icon-button"
+					>
+						📷
+					</button>
+					<button
+						title="Export Level"
+						data-action="export"
+						class="action gray icon-button"
+					>
+						💾
+					</button>
+					<button
+						title="Import Level"
+						data-action="importpopup"
+						class="action gray icon-button"
+					>
+						📂
+					</button>
+				</div>
+			</section>
+		</div>
 		<script>
+			document.getElementById("JS-Error").style.display = "block";
+		</script>
+		<script>
+			document.getElementById("JS-Error").style.display = "";
+			
 			let levelSection = document.getElementById("Level");
 			let levelContainer = document.getElementById("Level-Container");
 			let resizeHandle = document.getElementById("Resize-Handle");
 			let size = document.getElementById("Size");
 			let toolbar = document.getElementById("Toolbar");
-			let warningText = document.getElementById("Warning-Text");
-			let warning = document.getElementById("Warning");
 			
 			const TILES = {
 				SKY: "🟦",
@@ -261,6 +331,7 @@
 					}
 				}
 				
+				const oldTile = tile.dataset.tile;
 				if (selectedTool === "pick" || ev.buttons & 4) {
 					if (levelObject.obstacles.some(posFunc)) {
 						selectedTool = "obstacle";
@@ -314,6 +385,11 @@
 						levelObject.obstacles.push(xy);
 					}
 				}
+				
+				const stencil = tile.previousElementSibling;
+				if (!stencil || !stencil.classList.contains("tile-stencil"))
+					return;
+				stencil.dataset.tile = tile.dataset.tile;
 			}
 			
 			function updateGoal() {
@@ -346,61 +422,61 @@
 				input.accept = ".a4d";
 				input.click();
 				input.onchange = async () => {
-					warning.style.display = "";
-					let file;
-					try {
-						file = JSON.parse(await input.files[0].text())
-					} catch(e) {
-						console.error("error loading level:", e);
-						warning.style.display = "inline-block";
-						warningText.innerText = "The file you imported is not a valid .a4d file.";
-						return;
-					}
-					/*
-						why should we intentionally limit backwards compatibility
-						for (let key in levelObject) {
-							if (file[key] == undefined) {
-								warning.style.display = "inline-block";
-								warningText.innerText = "The file you imported is either different or came from an old version of the editor.";
-							}
+					hidePopup();
+					loadLevel(await input.files[0].text());
+				}
+			}
+			const loadLevel = async (text) => {
+				let file;
+				try {
+					file = JSON.parse(text);
+				} catch(e) {
+					console.error("error loading level:", e);
+					showPopup("Error", "invalida4d");
+					return;
+				}
+				/*
+					why should we intentionally limit backwards compatibility
+					for (let key in levelObject) {
+						if (file[key] == undefined) {
+							warning.style.display = "inline-block";
+							warningText.innerText = "The file you imported is either different or came from an old version of the editor.";
 						}
-					*/
-					const ch = o => isNaN(o) ? null : o;
-					const t = e => {
-						throw e;
+					}
+				*/
+				const ch = o => isNaN(o) ? null : o;
+				const t = e => {
+					throw e;
+				};
+				try {
+					levelObject = {
+						width: ch(file.width)
+							|| t(new Error("width must be a number!")),
+						height: ch(file.height)
+							|| t(new Error("height must be a number!")),
+						obstacles: file.obstacles || [],
+						apples: file.apples || [],
+						bigApple: file.bigApple || {},
+						enemies: file.enemies || [],
+						checkpoints: file.checkpoints || [],
+						spikes: file.spikes || [],
+						moving: file.moving || [],
 					};
-					try {
-						levelObject = {
-							width: ch(file.width)
-								|| t(new Error("width must be a number!")),
-							height: ch(file.height)
-								|| t(new Error("height must be a number!")),
-							obstacles: file.obstacles || [],
-							apples: file.apples || [],
-							bigApple: file.bigApple || {},
-							enemies: file.enemies || [],
-							checkpoints: file.checkpoints || [],
-							spikes: file.spikes || [],
-							moving: file.moving || [],
-						}
-						// Fix old levels that had X and Y object positions stored as strings
-						for (const key of ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
-							levelObject[key] = levelObject[key].map(v => ({
-								...v,
-								x: Number(v.x),
-								y: Number(v.y),
-							}));
-						}
-						realWidth = levelObject.width * 48;
-						realHeight = levelObject.height * 48;
-						cleanup();
-						createLevel();
-					} catch (e) {
-						console.error("error loading level:", e);
-						warning.style.display = "inline-block";
-						warningText.innerText = "Error loading the level. See the browser console for more info.";
-						return;
+					// Fix old levels that had X and Y object positions stored as strings
+					for (const key of ["obstacles", "apples", "enemies", "checkpoints", "spikes"]) {
+						levelObject[key] = levelObject[key].map(v => ({
+							...v,
+							x: Number(v.x),
+							y: Number(v.y),
+						}));
 					}
+					realWidth = levelObject.width * 48;
+					realHeight = levelObject.height * 48;
+					cleanup();
+					createLevel();
+				} catch (e) {
+					console.error("error loading level:", e);
+					showPopup("Error", "levelerror");
 				}
 			}
 			
@@ -466,6 +542,12 @@
 						}
 						tile.dataset.x = x;
 						tile.dataset.y = y;
+						
+						const stencil = document.createElement("div");
+						stencil.classList.add("tile-stencil");
+						stencil.dataset.tile = tile.dataset.tile;
+						row.appendChild(stencil);
+						
 						row.appendChild(tile);
 					}
 					levelSection.appendChild(row);
@@ -548,16 +630,12 @@
 				ext: ".svg",
 			});
 			
-			document.getElementById("Warning-Close").addEventListener("click", () => {
-				warning.style.display = "";
-			})
-			
-			toolbar.addEventListener("click", async (ev) => {
-				if (!ev.target || !ev.target.classList.contains("tool")) return;
-				const tool = ev.target.dataset.tool;
+			document.body.addEventListener("click", async (ev) => {
+				if (!ev.target || !ev.target.classList.contains("action")) return;
+				const action = ev.target.dataset.action;
 				
-				switch (tool) {
-					case "_clear":
+				switch (action) {
+					case "clear":
 						if (!confirm("Are you sure you want to clear the level?")) return;
 						levelObject.obstacles = [];
 						levelObject.enemies = [];
@@ -568,13 +646,20 @@
 						levelObject.bigApple = {};
 						createLevel();
 					break;
-					case "_export":
+					case "export":
 						download(JSON.stringify(levelObject), "level.a4d");
 					break;
-					case "_import":
+					case "importpopup":
+						showPopup("Import", "import");
+					break;
+					case "urlpopup":
+						document.getElementById("Download-URL-Status").textContent = "";
+						showPopup("Download Level from URL", "importurl");
+					break;
+					case "import":
 						importFile();
 					break;
-					case "_screenshot":
+					case "screenshot":
 						ev.target.disabled = true;
 						await new Promise(r=>requestAnimationFrame(r));
 						await new Promise(r=>requestAnimationFrame(r));
@@ -606,26 +691,80 @@
 							}
 						} catch(e) {
 							console.error("error taking screenshot:", e);
-							warning.style.display = "inline-block";
-							warningText.innerText = "Error taking a screenshot. See the browser console for more info.";
+							showPopup("Error", "screenshoterror");
 						}
 						levelSection.classList.remove("screenshot-mode");
 						ev.target.disabled = false;
 					break;
+					case "tool":
+						selectedTool = ev.target.dataset.tool;
+						updateTool();
+					break;
+					case "downloadurl":
+						const status = document.getElementById("Download-URL-Status");
+						
+						let url;
+						try {
+							url = new URL(document.getElementById("Download-URL-Input").value);
+						} catch(e) {
+							status.textContent = "That is not a valid URL!";
+							return;
+						}
+						
+						ev.target.disabled = true;
+						try {
+							status.textContent = "Downloading...";
+							const encoded = encodeURIComponent(url.href);
+							const resp = await fetch(
+								`https://api.allorigins.win/raw?url=${encoded}`
+							);
+							const text = await resp.text();
+							status.textContent = "";
+							
+							hidePopup();
+							
+							loadLevel(text);
+						} catch(e) {
+							console.log("error downloading:", e);
+							status.textContent = "Error downloading the level. See the browser console for more info.";
+						}
+						ev.target.disabled = false;
+					break;
 				}
-				if (tool.startsWith("_")) return;
 				
-				selectedTool = tool;
-				updateTool();
 			});
 			function updateTool() {
-				document.querySelectorAll(".tool").forEach(
+				document.querySelectorAll('button[data-action="tool"]').forEach(
 					el => el.classList.remove("selected")
 				);
 				document.querySelector(
-					`button.tool[data-tool="${selectedTool}"]`
+					`button[data-action="tool"][data-tool="${selectedTool}"]`
 				)?.classList.add("selected");
 			}
+			
+			const popup = document.getElementById("Popup");
+			function hidePopup() {
+				popup.style.display = "";
+			}
+			function showPopup(title, contentId) {
+				document.getElementById("Popup-Title").textContent = title;
+				
+				document.querySelectorAll(".popup-content").forEach(
+					el => el.style.display = ""
+				);
+				document.querySelector(
+					`.popup-content[data-id="${contentId}"]`
+				).style.display = "unset";
+				
+				popup.style.display = "inline-block";
+			}
+			document.getElementById("Popup-Close").addEventListener("click", hidePopup);
+			document.body.addEventListener("mousedown", ev => {
+				if (ev.target === popup || popup.contains(ev.target)) return;
+				hidePopup();
+			});
+			
+			document.getElementById("Editor").style.display = "block";
 		</script>
 	</body>
 </html>
